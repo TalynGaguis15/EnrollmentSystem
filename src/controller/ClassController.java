@@ -17,7 +17,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
-
 import domain.ClassInformation;
 import service.StudentClass;
 import service.StudentClassImpl;
@@ -36,17 +35,15 @@ private StudentClassImpl studentclass;
 			@QueryParam("courseName") String courseName,
 			@QueryParam("schedule") String schedule, 
 			@QueryParam("location") String location,
-			@QueryParam("instructor") String instructor,
-			@QueryParam("units") Long units,
-			@QueryParam("classsize") Long classsize ) {
+			@QueryParam("instructor") String instructor) {
 
 		try {
 			List<ClassInformation> users;
 			
 			if (StringUtils.isAllBlank(courseCode, courseName, schedule, location, instructor)) {
-				users = studentclass.findAll();
+				users = studentclass.findAllClass();
 			} else {
-				users = studentclass.findByName(courseCode, courseName, schedule, location, instructor, units, classsize);
+				users = studentclass.findByCourse(courseCode, courseName, schedule, location, instructor);
 			}
 						
 			return users;
@@ -64,7 +61,7 @@ private StudentClassImpl studentclass;
 
 		try {
 			Long longId = Long.parseLong(id);
-			ClassInformation user = studentclass.find(longId);
+			ClassInformation user = studentclass.findClass(longId);
 			return user;
 		} catch (Exception e) {
 			throw new WebApplicationException(e);
@@ -76,9 +73,9 @@ private StudentClassImpl studentclass;
 	public Response addUser(ClassInformation user) {
 
 		try {
-			studentclass.add(user);
+			studentclass.addClass(user);
 			String result = "User saved : " + user.getCourseCode() + " " + user.getCourseName() + " " + user.getSchedule() + ""
-					+ "" + user.getLocation() + "" + user.getInstructor() + "" + user.getUnits() + "" + user.getClassSize();
+					+ "" + user.getLocation() + "" + user.getInstructor();
 			return Response.status(201).entity(result).build();
 		} catch (Exception e) {
 			throw new WebApplicationException(e);
@@ -91,9 +88,9 @@ private StudentClassImpl studentclass;
 	public Response updateUser(ClassInformation user) {
 
 		try {
-			studentclass.upsert(user);
+			studentclass.upsertClass(user);
 			String result = "User updated : " + user.getCourseCode() + " " + user.getCourseName() + " " + user.getSchedule() + ""
-					+ "" + user.getLocation() + "" + user.getInstructor() + "" + user.getUnits() + "" + user.getClassSize();
+					+ "" + user.getLocation() + "" + user.getInstructor();
 			return Response.status(200).entity(result).build();
 		} catch (Exception e) {
 			throw new WebApplicationException(e);
@@ -107,7 +104,7 @@ private StudentClassImpl studentclass;
 
 		try {
 			Long longId = Long.parseLong(id);
-			studentclass.delete(longId);
+			studentclass.deleteClass(longId);
 			String result = "User deleted";
 			return Response.status(200).entity(result).build();
 		} catch (Exception e) {

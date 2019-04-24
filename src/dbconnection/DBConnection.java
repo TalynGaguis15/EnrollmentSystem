@@ -3,20 +3,37 @@ package dbconnection;
 import java.util.List;
 
 import domain.ClassInformation;
+import domain.StudentInformation;
 
 public interface DBConnection {
 
-    public List<ClassInformation> findAll();
+    // Class Information
 	
-	public ClassInformation find(Long id);
+	public List<ClassInformation> findAllClass();
 	
-	public List<ClassInformation> findByName(String courseCode, String courseName, String schedule, String location, String instructor);
+	public ClassInformation findClass(Long id);
 	
-	public void add(ClassInformation user);
+	public List<ClassInformation> findByCourse(String courseCode, String courseName, String schedule, String location, String instructor);
 	
-	public void update(ClassInformation user);
+	public void addClass(ClassInformation user);
 	
-	public void delete(Long id);
+	public void updateClass(ClassInformation user);
+	
+	public void deleteClass(Long id);
+	
+	//Student Information
+	
+	public List<StudentInformation> findAllStudent();
+	
+	public StudentInformation findStudent(Long studentID);
+	
+	public List<StudentInformation> findByName(String firstName, String middleName, String lastName, String course);
+	
+	public void addStudent(StudentInformation student);
+	
+	public void updateStudent(StudentInformation student);
+	
+	public void deleteStudent(Long studentID);
 
 
 }

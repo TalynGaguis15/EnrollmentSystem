@@ -2,31 +2,26 @@ package domain;
 
 public class ClassInformation {
 
-	Long id, units, classSize;
+	Long id;
 	private String courseCode, courseName, schedule, location, instructor;
-	
-	
 
 	public ClassInformation() {
-		
+
 	}
 
-	public ClassInformation(String courseCode, String courseName, String schedule, String location,
-			String instructor, Long units, Long classSize) {
-		this(null, courseCode, courseName, schedule, location, instructor, units, classSize);
+	public ClassInformation(String courseCode, String courseName, String schedule, String location, String instructor) {
+		this(null, courseCode, courseName, schedule, location, instructor);
 	}
 
 	public ClassInformation(Long id, String courseCode, String courseName, String schedule, String location,
-			String instructor, Long units, Long classSize) {
+			String instructor) {
 		this.id = id;
 		this.courseCode = courseCode;
 		this.courseName = courseName;
 		this.schedule = schedule;
 		this.location = location;
 		this.instructor = instructor;
-		this.units = units;
-		this.classSize = classSize;
-		
+
 	}
 
 	public Long getId() {
@@ -35,22 +30,6 @@ public class ClassInformation {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getUnits() {
-		return units;
-	}
-
-	public void setUnits(Long units) {
-		this.units = units;
-	}
-
-	public Long getClassSize() {
-		return classSize;
-	}
-
-	public void setClassSize(Long classSize) {
-		this.classSize = classSize;
 	}
 
 	public String getCourseCode() {
@@ -92,7 +71,5 @@ public class ClassInformation {
 	public void setInstructor(String instructor) {
 		this.instructor = instructor;
 	}
-
-	
 
 }
