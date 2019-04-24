@@ -18,7 +18,6 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 
 import domain.ClassInformation;
-import service.StudentClass;
 import service.StudentClassImpl;
 
 @Path("/class")

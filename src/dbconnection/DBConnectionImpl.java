@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hsqldb.jdbc.JDBCDataSource;
 
 import domain.ClassInformation;
+import domain.InstructorInformation;
 import domain.StudentInformation;
 
 public class DBConnectionImpl implements DBConnection {
@@ -19,6 +20,7 @@ public class DBConnectionImpl implements DBConnection {
 	private JDBCDataSource data;
 	public ResultSet result;
 	private static DBConnectionImpl INSTANCE;
+	public String createClassSql, createStudentSql, createInstructorSql, createScheduleSql;
 
 	static public DBConnectionImpl getInstance() {
 
@@ -49,18 +51,26 @@ public class DBConnectionImpl implements DBConnection {
 	}
 
 	private void createTable() {
-		String createClassSql = "CREATE TABLE CLASS " + "(id INTEGER IDENTITY PRIMARY KEY, "
+		createClassSql = "CREATE TABLE CLASS " + "(id INTEGER IDENTITY PRIMARY KEY, "
 				+ " coursecode VARCHAR(255) not NULL, " + " coursename VARCHAR(255) not NULL, " + " schedule VARCHAR(255) not NULL, "
 				+ " location VARCHAR(255) not NULL, " + " instructor VARCHAR(255)not NULL)";
-		String createStudentSql = "CREATE TABLE STUDENT " + "(studentid INTEGER IDENTITY PRIMARY KEY, "
-				+ " firstname VARCHAR(255), " + " middlename VARCHAR(255), " + " lastname VARCHAR(255), "
-				+ " course VARCHAR(255))";
+		createStudentSql = "CREATE TABLE STUDENT " + "(studentid INTEGER IDENTITY PRIMARY KEY, "
+				+ " firstname VARCHAR(255) not NULL, " + " middlename VARCHAR(255), " + " lastname VARCHAR(255) not NULL, "
+				+ " course VARCHAR(255) not NULL)";
+		createScheduleSql = "CREATE TABLE SCHEDULE " + "(id INTEGER IDENTITY PRIMARY KEY, "
+				+ " classid INTEGER not NULL " + " studentid INTEGER not NULL)";
+		createInstructorSql = "CREATE TABLE INSTRUCTOR " + "(id INTEGER IDENTITY PRIMARY KEY, "
+				+ " firstname VARCHAR(255) not NULL " + " middlename VARCHAR(255) " + " lastname VARCHAR(255) not NULL)";
+
+		
 
 		try (Connection conn = data.getConnection(); Statement stmt = conn.createStatement()) {
 
 			stmt.executeUpdate(createClassSql);
-			stmt.execute(createStudentSql);
-
+			stmt.executeUpdate(createStudentSql);
+			stmt.executeUpdate(createInstructorSql);
+			stmt.executeUpdate(createScheduleSql);
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -282,6 +292,7 @@ public class DBConnectionImpl implements DBConnection {
 			throw new RuntimeException(e);
 		}
 	}
+	 
 	@Override
 	public void updateStudent(StudentInformation student) {
 		String updateSql = "UPDATE STUDENT SET firstname = ?, middlename = ?, lastname = ?, course = ? "
@@ -303,6 +314,7 @@ public class DBConnectionImpl implements DBConnection {
 		
 	}
 	@Override
+	
 	public void deleteStudent(Long studentID) {
 		String updateSql = "DELETE FROM STUDENT WHERE studentid = ?";
 
@@ -315,6 +327,72 @@ public class DBConnectionImpl implements DBConnection {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+	//  ---------- Instructor Information ----------     //
+	@Override
+	public List<InstructorInformation> findAllInstructor() {
+		return findByInstructorName(null, null, null);
+	}
+
+	public List<InstructorInformation> findByInstructorName(String firstName, String middleName, String lastName){
+		List<InstructorInformation> instructors = new ArrayList<>();
+
+		String sql = "SELECT * FROM INSTRUCTOR WHERE firstname LIKE ? AND lastname LIKE ?";
+
+		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+			ps.setString(1, createSearchValue(firstName));
+			ps.setString(2, createSearchValue(lastName));
+
+			ResultSet results = ps.executeQuery();
+
+			while (results.next()) {
+				InstructorInformation instructor = new InstructorInformation(Long.valueOf(results.getInt("id")), results.getString("firstname"),
+						results.getString("middlename"), results.getString("lastname"));
+				instructors.add(instructor);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+
+		return instructors;
+	}
+	@Override
+	public void addInstructor(InstructorInformation instructor) {
+		String insertSql = "INSERT INTO INSTRUCTOR (firstname, middlename, lastname) VALUES (?, ?, ?)";
+
+		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(insertSql)) {
+
+			ps.setString(1, instructor.getFirstName());
+			ps.setString(2, instructor.getMiddleName());
+			ps.setString(3, instructor.getLastName());
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	@Override
+	public void updateInstructor(InstructorInformation instructor) {
+		String updateSql = "UPDATE INSTRUCTOR SET firstname = ?, middlename = ?, lastname = ? "
+				+ " WHERE id = ?";
+
+		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(updateSql)) {
+
+			ps.setString(1, instructor.getFirstName());
+			ps.setString(2, instructor.getMiddleName());
+			ps.setString(3, instructor.getLastName());
+			ps.setLong(4, instructor.getId());
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
 	}
 
 }

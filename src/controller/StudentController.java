@@ -56,12 +56,12 @@ public class StudentController {
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public StudentInformation getStudent(@PathParam("id") String id) {
+	public StudentInformation getStudent(@PathParam("studentID") String studentID) {
 
 		try {
-			Long longId = Long.parseLong(id);
-			StudentInformation user = studentclass.findStudent(longId);
-			return user;
+			Long longId = Long.parseLong(studentID);
+			StudentInformation student = studentclass.findStudent(longId);
+			return student;
 		} catch (Exception e) {
 			throw new WebApplicationException(e);
 		}
@@ -73,7 +73,7 @@ public class StudentController {
 
 		try {
 			studentclass.addStudent(student);
-			String result = "User saved : " + student.getFirstName() + " " + student.getMiddleName() + " " + student.getLastName() + ""
+			String result = "User saved : " + student.getFirstName() + " " + student.getMiddleName() + " " + student.getLastName() 
 					+ "" + student.getCourse();
 			return Response.status(201).entity(result).build();
 		} catch (Exception e) {

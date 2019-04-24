@@ -3,11 +3,11 @@ package service;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 
 import dbconnection.DBConnection;
 import dbconnection.DBConnectionImpl;
 import domain.ClassInformation;
+import domain.InstructorInformation;
 import domain.StudentInformation;
 
 public class StudentClassImpl implements StudentClass {
@@ -18,7 +18,7 @@ public class StudentClassImpl implements StudentClass {
 		this.connect = DBConnectionImpl.getInstance();
 	}
 
-	//	---------- Student Information ----------   //
+	// ---------- Student Information ---------- //
 	@Override
 	public List<ClassInformation> findAllClass() {
 		return connect.findAllClass();
@@ -68,35 +68,81 @@ public class StudentClassImpl implements StudentClass {
 
 	}
 
-  //	---------- Student Information ----------   //
+	// ---------- Student Information ---------- //
 
 	public List<StudentInformation> findAllStudent() {
-			return connect.findAllStudent();
+		return connect.findAllStudent();
 	}
 
 	public StudentInformation findStudent(Long studentID) {
-			return connect.findStudent(studentID);
+		return connect.findStudent(studentID);
 	}
 
 	public List<StudentInformation> findByName(String firstName, String middleName, String lastName, String course) {
-			return connect.findByName(firstName, middleName, lastName, course);
+		return connect.findByName(firstName, middleName, lastName, course);
 	}
 
 	public void addStudent(StudentInformation student) {
-
+		if (validate(student)) {
+			connect.addStudent(student);
+		} else {
+			throw new IllegalArgumentException("Fields FirstName and LastName cannot be blank.");
+		}
 	}
 
-	public void upsertStudent(StudentInformation user) {
-		
+	public void upsertStudent(StudentInformation student) {
+		if (validate(student)) {
+			if (student.getStudentID() != null && student.getStudentID() >= 0) {
+				connect.updateStudent(student);
+			} else {
+				connect.addStudent(student);
+			}
+		} else {
+			throw new IllegalArgumentException("Fields CourseCode and CourseName cannot be blank.");
+		}
 	}
 
 	public void deleteStudent(Long studentID) {
-		
+		connect.deleteStudent(studentID);
 	}
-	
+
 	private boolean validate(StudentInformation student) {
 		return !StringUtils.isAnyBlank(student.getFirstName(), student.getMiddleName(), student.getLastName(),
 				student.getCourse());
+
+	}
+
+	// ---------- Instructor Information ---------- //
+	
+	public List<InstructorInformation> findAllInstructor() {
+		return connect.findAllInstructor();
+	}
+
+	public List<InstructorInformation> findByInstructorName(String firstName, String middleName, String lastName) {
+		return connect.findByInstructorName(firstName, middleName, lastName);
+	}
+
+	public void addInstructor(InstructorInformation instructor) {
+		if (validate(instructor)) {
+			connect.addInstructor(instructor);
+		} else {
+			throw new IllegalArgumentException("Fields FirstName and LastName cannot be blank.");
+		}
+	}
+
+	public void upsertInstructor(InstructorInformation instructor) {
+		if (validate(instructor)) {
+			if (instructor.getId() != null && instructor.getId() >= 0) {
+				connect.updateInstructor(instructor);
+			} else {
+				connect.addInstructor(instructor);
+			}
+		} else {
+			throw new IllegalArgumentException("Fields FirstName and LastName cannot be blank.");
+		}
+	}
+	private boolean validate(InstructorInformation instructor) {
+		return !StringUtils.isAnyBlank(instructor.getFirstName(), instructor.getMiddleName(), instructor.getLastName());
 
 	}
 
