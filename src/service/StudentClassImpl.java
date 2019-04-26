@@ -8,6 +8,7 @@ import dbconnection.DBConnection;
 import dbconnection.DBConnectionImpl;
 import domain.ClassInformation;
 import domain.InstructorInformation;
+import domain.ScheduleInformation;
 import domain.StudentInformation;
 
 public class StudentClassImpl implements StudentClass {
@@ -145,5 +146,27 @@ public class StudentClassImpl implements StudentClass {
 		return !StringUtils.isAnyBlank(instructor.getFirstName(), instructor.getMiddleName(), instructor.getLastName());
 
 	}
+	
+	// ---------- Schedule Information ---------- //
+	
+	public ScheduleInformation findByClassSchedule(Long studentID) {
+		return connect.findByClassSchedule(studentID);
+	}
+	
+	public ScheduleInformation findByStudent(Long classID) {
+		return connect.findByStudent(classID);
+	}
+
+	public void addSchedule(ScheduleInformation schedule) {
+		
+	}
+
+	public void deleteSchedule(ScheduleInformation schedule) {
+		
+	}
+
+	
+	
+	
 
 }

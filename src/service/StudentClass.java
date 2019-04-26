@@ -4,11 +4,12 @@ import java.util.List;
 
 import domain.ClassInformation;
 import domain.InstructorInformation;
+import domain.ScheduleInformation;
 import domain.StudentInformation;
 
 public interface StudentClass {
 
-	//     ----------- Class Information -----------    //
+	// ----------- Class Information ----------- //
 
 	public List<ClassInformation> findAllClass();
 
@@ -23,7 +24,7 @@ public interface StudentClass {
 
 	public void deleteClass(Long id);
 
-	//  ----------- Student Information -----------    //
+	// ----------- Student Information ----------- //
 
 	public List<StudentInformation> findAllStudent();
 
@@ -36,8 +37,9 @@ public interface StudentClass {
 	public void upsertStudent(StudentInformation user);
 
 	public void deleteStudent(Long studentID);
-	
-	//  ----------- Instructor Information -----------    //
+
+	// ----------- Instructor Information ----------- //
+
 	public List<InstructorInformation> findAllInstructor();
 
 	public List<InstructorInformation> findByInstructorName(String firstName, String middleName, String lastName);
@@ -45,5 +47,14 @@ public interface StudentClass {
 	public void addInstructor(InstructorInformation instructor);
 
 	public void upsertInstructor(InstructorInformation instructor);
-	//  ----------- Schedule Information -----------    //
+
+	// ----------- Schedule Information ----------- //
+
+	public ScheduleInformation findByClassSchedule(Long studentID);
+
+	public ScheduleInformation findByStudent(Long classID);
+
+	public void addSchedule(ScheduleInformation schedule);
+
+	public void deleteSchedule(ScheduleInformation schedule);
 }

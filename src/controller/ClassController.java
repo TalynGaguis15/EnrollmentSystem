@@ -34,7 +34,9 @@ private StudentClassImpl studentclass;
 			@QueryParam("courseName") String courseName,
 			@QueryParam("schedule") String schedule, 
 			@QueryParam("location") String location,
-			@QueryParam("instructor") String instructor) {
+			@QueryParam("instructor") String instructor,
+			@QueryParam("units") Long units,
+			@QueryParam("classSize") String classSize) {
 
 		try {
 			List<ClassInformation> users;
@@ -73,8 +75,9 @@ private StudentClassImpl studentclass;
 
 		try {
 			studentclass.addClass(user);
-			String result = "User saved : " + user.getCourseCode() + " " + user.getCourseName() + " " + user.getSchedule() + ""
-					+ "" + user.getLocation() + "" + user.getInstructor();
+			String result = "User saved : " + user.getCourseCode() + " " +  user.getUnits() + " " + user.getClassSize()+ " " +
+			user.getCourseName() + " " + user.getSchedule() + ""
+			+ "" + user.getLocation() + "" + user.getInstructor() ;
 			return Response.status(201).entity(result).build();
 		} catch (Exception e) {
 			throw new WebApplicationException(e);
@@ -89,7 +92,7 @@ private StudentClassImpl studentclass;
 		try {
 			studentclass.upsertClass(user);
 			String result = "User updated : " + user.getCourseCode() + " " + user.getCourseName() + " " + user.getSchedule() + ""
-					+ "" + user.getLocation() + "" + user.getInstructor();
+					+ "" + user.getLocation() + "" + user.getInstructor() + " " + user.getUnits() + " " + user.getClassSize();
 			return Response.status(200).entity(result).build();
 		} catch (Exception e) {
 			throw new WebApplicationException(e);

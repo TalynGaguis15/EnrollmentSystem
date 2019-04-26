@@ -13,6 +13,7 @@ import org.hsqldb.jdbc.JDBCDataSource;
 
 import domain.ClassInformation;
 import domain.InstructorInformation;
+import domain.ScheduleInformation;
 import domain.StudentInformation;
 
 public class DBConnectionImpl implements DBConnection {
@@ -20,7 +21,6 @@ public class DBConnectionImpl implements DBConnection {
 	private JDBCDataSource data;
 	public ResultSet result;
 	private static DBConnectionImpl INSTANCE;
-	public String createClassSql, createStudentSql, createInstructorSql, createScheduleSql;
 
 	static public DBConnectionImpl getInstance() {
 
@@ -41,48 +41,9 @@ public class DBConnectionImpl implements DBConnection {
 
 	private void connect() {
 		data = new JDBCDataSource();
-		data.setDatabase("jdbc:hsqldb:mem:EnrollmentSystem");
-		data.setUser("username");
-		data.setPassword("password");
-
-		createTable();
-		insertInitUsers();
-
-	}
-
-	private void createTable() {
-		createClassSql = "CREATE TABLE CLASS " + "(id INTEGER IDENTITY PRIMARY KEY, "
-				+ " coursecode VARCHAR(255) not NULL, " + " coursename VARCHAR(255) not NULL, " + " schedule VARCHAR(255) not NULL, "
-				+ " location VARCHAR(255) not NULL, " + " instructor VARCHAR(255)not NULL)";
-		createStudentSql = "CREATE TABLE STUDENT " + "(studentid INTEGER IDENTITY PRIMARY KEY, "
-				+ " firstname VARCHAR(255) not NULL, " + " middlename VARCHAR(255), " + " lastname VARCHAR(255) not NULL, "
-				+ " course VARCHAR(255) not NULL)";
-		createScheduleSql = "CREATE TABLE SCHEDULE " + "(id INTEGER IDENTITY PRIMARY KEY, "
-				+ " classid INTEGER not NULL " + " studentid INTEGER not NULL)";
-		createInstructorSql = "CREATE TABLE INSTRUCTOR " + "(id INTEGER IDENTITY PRIMARY KEY, "
-				+ " firstname VARCHAR(255) not NULL " + " middlename VARCHAR(255) " + " lastname VARCHAR(255) not NULL)";
-
-		
-
-		try (Connection conn = data.getConnection(); Statement stmt = conn.createStatement()) {
-
-			stmt.executeUpdate(createClassSql);
-			stmt.executeUpdate(createStudentSql);
-			stmt.executeUpdate(createInstructorSql);
-			stmt.executeUpdate(createScheduleSql);
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void insertInitUsers() {
-
-		addClass(new ClassInformation("English101", "English", "MWF", "ROOM101", "Mr. Casinto"));
-		addClass(new ClassInformation("Filipino101", "Filipino", "TTh", "ROOM102", "Mr. Park"));
-		addStudent(new StudentInformation ("Crystalyn", null, "Gaguis", "BSIT"));
-
+		data.setDatabase("jdbc:hsqldb:hsql://localhost/college");
+		data.setUser("SA");
+		data.setPassword("");
 	}
 
 	//    ---------- Class Information ----------     //
@@ -97,27 +58,26 @@ public class DBConnectionImpl implements DBConnection {
 	public ClassInformation findClass(Long id) {
 
 		ClassInformation user = null;
-
-		if (id != null) {
-			String sql = "SELECT * FROM CLASS where id = ?";
+		String sql = "SELECT * FROM CLASS where id = ?";
 			try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-				ps.setInt(1, id.intValue());
+				ps.setLong(1, id);
 				ResultSet results = ps.executeQuery();
 
 				if (results.next()) {
-					user = new ClassInformation(Long.valueOf(results.getInt("id")), results.getString("coursecode"),
+					user = new ClassInformation(Long.valueOf(results.getInt("id")),Long.valueOf(results.getInt("units")),
+							Long.valueOf(results.getInt("classsize")), results.getString("coursecode"),
 							results.getString("coursename"), results.getString("schedule"),
 							results.getString("location"), results.getString("instructor"));
+				
 				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 				throw new RuntimeException(e);
 			}
-		}
 
-		return user;
+			return user;
 	}
 
 	@Override
@@ -125,7 +85,12 @@ public class DBConnectionImpl implements DBConnection {
 			String instructor) {
 		List<ClassInformation> users = new ArrayList<>();
 
-		String sql = "SELECT * FROM CLASS WHERE coursecode LIKE ? AND coursename LIKE ?";
+//		String sql = "SELECT * FROM CLASS c "
+//		            + "INNER JOIN SCHEDULE s "
+//					+ "ON c.id = s.classid " 
+//		            + "WHERE s.studentid = (SELECT studentid FROM STUDENT WHERE studentid = 0)";
+		
+		String sql = "SELECT * FROM STUDENT WHERE courseCode LIKE ? AND courseName LIKE ?";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -135,8 +100,9 @@ public class DBConnectionImpl implements DBConnection {
 			ResultSet results = ps.executeQuery();
 
 			while (results.next()) {
-				ClassInformation user = new ClassInformation(Long.valueOf(results.getInt("id")),
-						results.getString("coursecode"), results.getString("coursename"), results.getString("schedule"),
+				ClassInformation user = new ClassInformation(Long.valueOf(results.getInt("id")),Long.valueOf(results.getInt("units")),
+						Long.valueOf(results.getInt("classsize")), results.getString("coursecode"),
+						results.getString("coursename"), results.getString("schedule"),
 						results.getString("location"), results.getString("instructor"));
 				users.add(user);
 			}
@@ -165,7 +131,8 @@ public class DBConnectionImpl implements DBConnection {
 	@Override
 	public void addClass(ClassInformation user) {
 
-		String insertSql = "INSERT INTO CLASS (coursecode, coursename, schedule, location, instructor) VALUES (?, ?, ?, ?, ?)";
+		String insertSql = "INSERT INTO CLASS (coursecode, coursename, schedule, location, instructor, units, classsize) "
+				+ " VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(insertSql)) {
 
@@ -174,6 +141,8 @@ public class DBConnectionImpl implements DBConnection {
 			ps.setString(3, user.getSchedule());
 			ps.setString(4, user.getLocation());
 			ps.setString(5, user.getInstructor());
+			ps.setLong(6, user.getUnits());
+			ps.setLong(7, user.getClassSize());
 			ps.executeUpdate();
 
 		} catch (SQLException e) {
@@ -184,7 +153,7 @@ public class DBConnectionImpl implements DBConnection {
 
 	@Override
 	public void updateClass(ClassInformation user) {
-		String updateSql = "UPDATE CLASS SET coursecode = ?, coursename = ?, schedule = ?, location = ?, instructor = ? "
+		String updateSql = "UPDATE CLASS SET coursecode = ?, coursename = ?, schedule = ?, location = ?, instructor = ?"
 				+ " WHERE id = ?";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(updateSql)) {
@@ -252,18 +221,23 @@ public class DBConnectionImpl implements DBConnection {
 	public List<StudentInformation> findByName(String firstName, String middleName, String lastName, String course) {
 		List<StudentInformation> students = new ArrayList<>();
 
-		String sql = "SELECT * FROM STUDENT WHERE firstname LIKE ? AND lastname LIKE ?";
+		//String sql = "SELECT * FROM STUDENT WHERE firstname LIKE ? AND lastname LIKE ?";
+		
+		String sql = "SELECT * FROM STUDENT s "
+				+ " INNER JOIN SCHEDULE sc ON " 
+				+ " s.studentid = sc.studentid" 
+				+ " WHERE sc.classid = (SELECT id FROM CLASS WHERE id = 0)";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-			ps.setString(1, createSearchValue(firstName));
-			ps.setString(2, createSearchValue(lastName));
+//			ps.setString(1, createSearchValue(firstName));
+//			ps.setString(2, createSearchValue(lastName));
 
 			ResultSet results = ps.executeQuery();
 
 			while (results.next()) {
-				StudentInformation student = new StudentInformation(Long.valueOf(results.getInt("studentid")), results.getString("firstname"),
-						results.getString("middlename"), results.getString("lastname"),
+				StudentInformation student = new StudentInformation(Long.valueOf(results.getInt("studentid")), Long.valueOf(results.getInt("totalunits")),
+						results.getString("firstname"), results.getString("middlename"), results.getString("lastname"),
 						results.getString("course"));
 				students.add(student);
 			}
@@ -277,7 +251,7 @@ public class DBConnectionImpl implements DBConnection {
 	}
 	@Override
 	public void addStudent(StudentInformation student) {
-		String insertSql = "INSERT INTO STUDENT (firstname, middlename, lastname, course) VALUES (?, ?, ?, ?)";
+		String insertSql = "INSERT INTO STUDENT (firstname, middlename, lastname, course, totalunits) VALUES (?, ?, ?, ?, ?)";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(insertSql)) {
 
@@ -285,6 +259,7 @@ public class DBConnectionImpl implements DBConnection {
 			ps.setString(2, student.getMiddleName());
 			ps.setString(3, student.getLastName());
 			ps.setString(4, student.getCourse());
+			ps.setLong(5, student.getUnits());
 			ps.executeUpdate();
 
 		} catch (SQLException e) {
@@ -295,7 +270,7 @@ public class DBConnectionImpl implements DBConnection {
 	 
 	@Override
 	public void updateStudent(StudentInformation student) {
-		String updateSql = "UPDATE STUDENT SET firstname = ?, middlename = ?, lastname = ?, course = ? "
+		String updateSql = "UPDATE STUDENT SET firstname = ?, middlename = ?, lastname = ?, course = ?, totalunits = ? "
 				+ " WHERE studentid = ?";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(updateSql)) {
@@ -304,7 +279,8 @@ public class DBConnectionImpl implements DBConnection {
 			ps.setString(2, student.getMiddleName());
 			ps.setString(3, student.getLastName());
 			ps.setString(4, student.getCourse());
-			ps.setLong(5, student.getStudentID());
+			ps.setLong(5, student.getUnits());
+			ps.setLong(6, student.getStudentID());
 			ps.executeUpdate();
 
 		} catch (SQLException e) {
@@ -394,5 +370,81 @@ public class DBConnectionImpl implements DBConnection {
 		}
 		
 	}
+	//  ---------- Schedule Information ----------     //
 
+
+	public ScheduleInformation findByClassSchedule(Long studentID)
+	{
+		ScheduleInformation schedule  = null;
+		ClassInformation classInfo = null;
+
+		if (studentID != null) {
+			String sql = "SELECT id, coursecode, coursename, schedule, instructor, units, classsize, location FROM CLASS  " + 
+					"INNER JOIN SCHEDULE ON CLASS.id = SCHEDULE.classid " + 
+					"WHERE SCHEDULE.studentid = (SELECT studentid FROM STUDENT WHERE studentid = ?)";
+			
+			
+			try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+				ps.setInt(1, studentID.intValue());
+				
+				ResultSet results = ps.executeQuery();
+
+				if (results.next()) {
+					classInfo = new ClassInformation(Long.valueOf(results.getInt("id")),Long.valueOf(results.getInt("units")),
+							Long.valueOf(results.getInt("classsize")), results.getString("coursecode"),
+							results.getString("coursename"), results.getString("schedule"),
+							results.getString("location"), results.getString("instructor"));
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		}
+
+		return schedule;
+	}
+
+	public ScheduleInformation findByStudent(Long classID)
+	{
+		ScheduleInformation schedule  = null;
+		StudentInformation student = null;
+
+		if (classID != null) {
+			String sql = "Select studentid,  firstname, middlename, lastname, course, totalunits From STUDENT s "
+					+ " Inner Join SCHEDULE sc ON " + " s.studentid = sc.studentid" + 
+		              " Where sc.classid = (Select id From CLASS Where id = ?)";
+			
+			try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+				ps.setInt(1, classID.intValue());
+				
+				ResultSet results = ps.executeQuery();
+
+				if (results.next()) {
+					student = new StudentInformation(Long.valueOf(results.getInt("studentid")), results.getString("firstname"),
+							results.getString("middlename"), results.getString("lastname"),
+							results.getString("course"));
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		}
+
+		return schedule;
+	}
+	
+
+	public void addSchedule(ScheduleInformation schedule)
+	{
+		
+	}
+
+	public void deleteSchedule(ScheduleInformation schedule)
+	{
+		
+	}
 }

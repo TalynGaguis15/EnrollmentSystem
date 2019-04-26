@@ -49,5 +49,15 @@ public interface DBConnection {
 	public void updateInstructor(InstructorInformation instructor);
 	
 	//  ---------- Student Schedule Information ------------     //
+	
+
+	public ScheduleInformation findByClassSchedule(Long studentID);
+	
+	public ScheduleInformation findByStudent(Long classID);
+
+	public void addSchedule(ScheduleInformation schedule);
+
+	public void deleteSchedule(ScheduleInformation schedule);
+	
 
 }
