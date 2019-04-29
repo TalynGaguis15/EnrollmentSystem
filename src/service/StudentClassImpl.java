@@ -35,8 +35,8 @@ public class StudentClassImpl implements StudentClass {
 			String instructor) {
 		return connect.findByCourse(courseCode, courseName, schedule, location, instructor);
 	}
-	public List<ClassInformation> findStudentSchedule(Long studentID)
-	{
+
+	public List<ClassInformation> findStudentSchedule(Long studentID) {
 		return connect.findStudentSchedule(studentID);
 	}
 
@@ -90,6 +90,7 @@ public class StudentClassImpl implements StudentClass {
 	public List<StudentInformation> findScheduleStudents(Long classID) {
 		return connect.findScheduleStudents(classID);
 	}
+
 	public void addStudent(StudentInformation student) {
 		if (validate(student)) {
 			connect.addStudent(student);
@@ -115,13 +116,12 @@ public class StudentClassImpl implements StudentClass {
 	}
 
 	private boolean validate(StudentInformation student) {
-		return !StringUtils.isAnyBlank(student.getFirstName(), student.getMiddleName(), student.getLastName(),
-				student.getCourse());
+		return !StringUtils.isAnyBlank(student.getFirstName(), student.getLastName(), student.getCourse());
 
 	}
 
 	// ---------- Instructor Information ---------- //
-	
+
 	public List<InstructorInformation> findAllInstructor() {
 		return connect.findAllInstructor();
 	}
@@ -149,24 +149,20 @@ public class StudentClassImpl implements StudentClass {
 			throw new IllegalArgumentException("Fields FirstName and LastName cannot be blank.");
 		}
 	}
+
 	private boolean validate(InstructorInformation instructor) {
-		return !StringUtils.isAnyBlank(instructor.getFirstName(), instructor.getMiddleName(), instructor.getLastName());
+		return !StringUtils.isAnyBlank(instructor.getFirstName(), instructor.getLastName());
 
 	}
-	
+
 	// ---------- Schedule Information ---------- //
-	
 
 	public void addSchedule(ScheduleInformation schedule) {
-		
+			connect.addSchedule(schedule);
 	}
 
-	public void deleteSchedule(ScheduleInformation schedule) {
-		
+	public void deleteScheduleStudent(Long scheduleID, Long studentID) {
+			connect.deleteScheduleStudent(scheduleID, studentID);
 	}
-
-	
-	
-	
 
 }

@@ -46,7 +46,7 @@ public class DBConnectionImpl implements DBConnection {
 		data.setPassword("");
 	}
 
-	//    ---------- Class Information ----------     //
+	// ---------- Class Information ---------- //
 
 	@Override
 	public List<ClassInformation> findAllClass() {
@@ -59,36 +59,33 @@ public class DBConnectionImpl implements DBConnection {
 
 		ClassInformation user = null;
 		String sql = "SELECT * FROM CLASS where id = ?";
-			try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-				ps.setLong(1, id);
-				ResultSet results = ps.executeQuery();
+			ps.setLong(1, id);
+			ResultSet results = ps.executeQuery();
 
-				if (results.next()) {
-					user = new ClassInformation(Long.valueOf(results.getInt("id")),
-							Long.valueOf(results.getInt("units")),Long.valueOf(results.getInt("classsize")), results.getString("coursecode"),
-							results.getString("coursename"), results.getString("schedule"),
-							results.getString("location"), results.getString("instructor"));
-				
-				}
+			if (results.next()) {
+				user = new ClassInformation(Long.valueOf(results.getInt("id")), Long.valueOf(results.getInt("units")),
+						Long.valueOf(results.getInt("classsize")), results.getString("coursecode"),
+						results.getString("coursename"), results.getString("schedule"), results.getString("location"),
+						results.getString("instructor"));
 
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
 			}
 
-			return user;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+
+		return user;
 	}
-	
+
 	@Override
-	public List<ClassInformation> findStudentSchedule(Long studentID)
-	{
+	public List<ClassInformation> findStudentSchedule(Long studentID) {
 		List<ClassInformation> users = new ArrayList<>();
 
-		String sql = "SELECT * FROM CLASS c "
-		            + "INNER JOIN SCHEDULE s "
-					+ "ON c.id = s.classid " 
-		            + "WHERE s.studentid = (SELECT studentid FROM STUDENT WHERE studentid = ?)";
+		String sql = "SELECT * FROM CLASS c " + "INNER JOIN SCHEDULE s " + "ON c.id = s.classid "
+				+ "WHERE s.studentid = (SELECT studentid FROM STUDENT WHERE studentid = ?)";
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
 			ps.setLong(1, studentID);
@@ -97,8 +94,8 @@ public class DBConnectionImpl implements DBConnection {
 
 			while (results.next()) {
 				ClassInformation user = new ClassInformation(Long.valueOf(results.getInt("id")),
-						Long.valueOf(results.getInt("units")),Long.valueOf(results.getInt("classsize")), results.getString("coursecode"),
-						results.getString("coursename"), results.getString("schedule"),
+						Long.valueOf(results.getInt("units")), Long.valueOf(results.getInt("classsize")),
+						results.getString("coursecode"), results.getString("coursename"), results.getString("schedule"),
 						results.getString("location"), results.getString("instructor"));
 				users.add(user);
 			}
@@ -115,7 +112,7 @@ public class DBConnectionImpl implements DBConnection {
 	public List<ClassInformation> findByCourse(String courseCode, String courseName, String schedule, String location,
 			String instructor) {
 		List<ClassInformation> users = new ArrayList<>();
-		
+
 		String sql = "SELECT * FROM CLASS WHERE courseCode LIKE ? AND courseName LIKE ?";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -127,8 +124,8 @@ public class DBConnectionImpl implements DBConnection {
 
 			while (results.next()) {
 				ClassInformation user = new ClassInformation(Long.valueOf(results.getInt("id")),
-						Long.valueOf(results.getInt("units")),Long.valueOf(results.getInt("classsize")), results.getString("coursecode"),
-						results.getString("coursename"), results.getString("schedule"),
+						Long.valueOf(results.getInt("units")), Long.valueOf(results.getInt("classsize")),
+						results.getString("coursecode"), results.getString("coursename"), results.getString("schedule"),
 						results.getString("location"), results.getString("instructor"));
 				users.add(user);
 			}
@@ -216,32 +213,33 @@ public class DBConnectionImpl implements DBConnection {
 	// ---------- Student Information ----------//
 	@Override
 	public List<StudentInformation> findAllStudent() {
-		return findByName(null, null,null, null);
+		return findByName(null, null, null, null);
 	}
+
 	@Override
 	public StudentInformation findStudent(Long studentID) {
 		StudentInformation student = null;
 
-			String sql = "SELECT * FROM STUDENT where studentid = ?";
-			try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+		String sql = "SELECT * FROM STUDENT where studentid = ?";
+		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-				ps.setLong(1, studentID);
-				ResultSet results = ps.executeQuery();
+			ps.setLong(1, studentID);
+			ResultSet results = ps.executeQuery();
 
-				if (results.next()) {
-					student = new StudentInformation(Long.valueOf(results.getInt("studentid")), Long.valueOf(results.getInt("totalunits")),
-							results.getString("firstname"), results.getString("middlename"), results.getString("lastname"),
-							results.getString("course"));
-				}
-
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
+			if (results.next()) {
+				student = new StudentInformation(Long.valueOf(results.getInt("studentid")),
+						Long.valueOf(results.getInt("totalunits")), results.getString("firstname"),
+						results.getString("middlename"), results.getString("lastname"), results.getString("course"));
 			}
-	
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 
 		return student;
 	}
+
 	@Override
 	public List<StudentInformation> findByName(String firstName, String middleName, String lastName, String course) {
 		List<StudentInformation> students = new ArrayList<>();
@@ -256,9 +254,9 @@ public class DBConnectionImpl implements DBConnection {
 			ResultSet results = ps.executeQuery();
 
 			while (results.next()) {
-				StudentInformation student = new StudentInformation(Long.valueOf(results.getInt("studentid")), Long.valueOf(results.getInt("totalunits")),
-						results.getString("firstname"), results.getString("middlename"), results.getString("lastname"),
-						results.getString("course"));
+				StudentInformation student = new StudentInformation(Long.valueOf(results.getInt("studentid")),
+						Long.valueOf(results.getInt("totalunits")), results.getString("firstname"),
+						results.getString("middlename"), results.getString("lastname"), results.getString("course"));
 				students.add(student);
 			}
 
@@ -269,16 +267,14 @@ public class DBConnectionImpl implements DBConnection {
 
 		return students;
 	}
+
 	@Override
-	public List<StudentInformation> findScheduleStudents(Long classID)
-	{
+	public List<StudentInformation> findScheduleStudents(Long classID) {
 		List<StudentInformation> users = new ArrayList<>();
 
-		String sql = "SELECT * FROM STUDENT s "
-				+ " INNER JOIN SCHEDULE sc "
-				+ "ON s.studentid = sc.studentid "
+		String sql = "SELECT * FROM STUDENT s " + " INNER JOIN SCHEDULE sc " + "ON s.studentid = sc.studentid "
 				+ " WHERE sc.classid = (SELECT id FROM CLASS WHERE id = ?)";
-		
+
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
 			ps.setLong(1, classID);
@@ -286,9 +282,9 @@ public class DBConnectionImpl implements DBConnection {
 			ResultSet results = ps.executeQuery();
 
 			while (results.next()) {
-				StudentInformation user = new StudentInformation(Long.valueOf(results.getInt("studentid")), Long.valueOf(results.getInt("totalunits")),
-						results.getString("firstname"), results.getString("middlename"), results.getString("lastname"),
-						results.getString("course"));
+				StudentInformation user = new StudentInformation(Long.valueOf(results.getInt("studentid")),
+						Long.valueOf(results.getInt("totalunits")), results.getString("firstname"),
+						results.getString("middlename"), results.getString("lastname"), results.getString("course"));
 				users.add(user);
 			}
 
@@ -299,7 +295,7 @@ public class DBConnectionImpl implements DBConnection {
 
 		return users;
 	}
-	
+
 	@Override
 	public void addStudent(StudentInformation student) {
 		String insertSql = "INSERT INTO STUDENT (firstname, middlename, lastname, course, totalunits) VALUES (?, ?, ?, ?, ?)";
@@ -318,7 +314,7 @@ public class DBConnectionImpl implements DBConnection {
 			throw new RuntimeException(e);
 		}
 	}
-	 
+
 	@Override
 	public void updateStudent(StudentInformation student) {
 		String updateSql = "UPDATE STUDENT SET firstname = ?, middlename = ?, lastname = ?, course = ?, totalunits = ? "
@@ -338,10 +334,11 @@ public class DBConnectionImpl implements DBConnection {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-		
+
 	}
+
 	@Override
-	
+
 	public void deleteStudent(Long studentID) {
 		String updateSql = "DELETE FROM STUDENT WHERE studentid = ?";
 
@@ -355,13 +352,14 @@ public class DBConnectionImpl implements DBConnection {
 			throw new RuntimeException(e);
 		}
 	}
-	//  ---------- Instructor Information ----------     //
+
+	// ---------- Instructor Information ---------- //
 	@Override
 	public List<InstructorInformation> findAllInstructor() {
 		return findByInstructorName(null, null, null);
 	}
 
-	public List<InstructorInformation> findByInstructorName(String firstName, String middleName, String lastName){
+	public List<InstructorInformation> findByInstructorName(String firstName, String middleName, String lastName) {
 		List<InstructorInformation> instructors = new ArrayList<>();
 
 		String sql = "SELECT * FROM INSTRUCTOR WHERE firstname LIKE ? AND lastname LIKE ?";
@@ -374,8 +372,8 @@ public class DBConnectionImpl implements DBConnection {
 			ResultSet results = ps.executeQuery();
 
 			while (results.next()) {
-				InstructorInformation instructor = new InstructorInformation(Long.valueOf(results.getInt("id")), results.getString("firstname"),
-						results.getString("middlename"), results.getString("lastname"));
+				InstructorInformation instructor = new InstructorInformation(Long.valueOf(results.getInt("id")),
+						results.getString("firstname"), results.getString("middlename"), results.getString("lastname"));
 				instructors.add(instructor);
 			}
 
@@ -386,6 +384,7 @@ public class DBConnectionImpl implements DBConnection {
 
 		return instructors;
 	}
+
 	@Override
 	public void addInstructor(InstructorInformation instructor) {
 		String insertSql = "INSERT INTO INSTRUCTOR (firstname, middlename, lastname) VALUES (?, ?, ?)";
@@ -402,10 +401,10 @@ public class DBConnectionImpl implements DBConnection {
 			throw new RuntimeException(e);
 		}
 	}
+
 	@Override
 	public void updateInstructor(InstructorInformation instructor) {
-		String updateSql = "UPDATE INSTRUCTOR SET firstname = ?, middlename = ?, lastname = ? "
-				+ " WHERE id = ?";
+		String updateSql = "UPDATE INSTRUCTOR SET firstname = ?, middlename = ?, lastname = ? " + " WHERE id = ?";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(updateSql)) {
 
@@ -419,18 +418,38 @@ public class DBConnectionImpl implements DBConnection {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-		
-	}
-	//  ---------- Schedule Information ----------     //
 
+	}
+	// ---------- Schedule Information ---------- //
 
-	public void addSchedule(ScheduleInformation schedule)
-	{
-		
+	public void addSchedule(ScheduleInformation schedule) {
+		String insertSql = "INSERT INTO SCHEDULE (classid, studentid) VALUES (?, ?)";
+
+		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(insertSql)) {
+
+			ps.setLong(1, schedule.getClassID());
+			ps.setLong(2, schedule.getStudentID());
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
-	public void deleteSchedule(ScheduleInformation schedule)
-	{
-		
+	public void deleteScheduleStudent(Long scheduleID, Long studentID) {
+		String updateSql = "DELETE FROM SCHEDULE WHERE classid LIKE ? AND studentid LIKE ?";
+
+		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(updateSql)) {
+
+			ps.setLong(1, scheduleID);
+			ps.setLong(2, studentID);
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
+	
 }

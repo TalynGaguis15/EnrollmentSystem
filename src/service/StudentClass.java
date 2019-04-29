@@ -55,5 +55,5 @@ public interface StudentClass {
 
 	public void addSchedule(ScheduleInformation schedule);
 
-	public void deleteSchedule(ScheduleInformation schedule);
+	public void deleteScheduleStudent(Long scheduleID, Long studentID);
 }

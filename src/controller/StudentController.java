@@ -41,7 +41,7 @@ public class StudentController {
 		try {
 			List<StudentInformation> student;
 			
-			if (StringUtils.isAllBlank(firstName, middleName, lastName, course)) {
+			if (StringUtils.isAllBlank(firstName, lastName, course)) {
 				student = studentclass.findAllStudent();
 			} else {
 				student = studentclass.findByName(firstName, middleName, lastName, course);

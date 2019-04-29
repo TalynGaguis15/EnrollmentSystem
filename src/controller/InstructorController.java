@@ -32,7 +32,7 @@ public class InstructorController {
 		try {
 			List<InstructorInformation> instructors;
 			
-			if (StringUtils.isAllBlank(firstName, middleName, lastName)) {
+			if (StringUtils.isAllBlank(firstName, lastName)) {
 				instructors = studentclass.findAllInstructor();
 			} else {
 				instructors = studentclass.findByInstructorName(firstName, middleName, lastName);
