@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 
+import domain.ClassInformation;
 import domain.StudentInformation;
 import service.StudentClassImpl;
 
@@ -55,7 +56,7 @@ public class StudentController {
 	}
 
 	@GET
-	@Path("{id}")
+	@Path("{studentID}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public StudentInformation getStudent(@PathParam("studentID") String studentID) {
 

@@ -17,6 +17,7 @@ public interface StudentClass {
 
 	public List<ClassInformation> findByCourse(String courseCode, String courseName, String schedule, String location,
 			String instructor);
+	public List<ClassInformation> findStudentSchedule(Long studentID);
 
 	public void addClass(ClassInformation user);
 
@@ -31,6 +32,8 @@ public interface StudentClass {
 	public StudentInformation findStudent(Long studentID);
 
 	public List<StudentInformation> findByName(String firstName, String middleName, String lastName, String course);
+	
+	public List<StudentInformation> findScheduleStudents(Long classID);
 
 	public void addStudent(StudentInformation student);
 
@@ -49,10 +52,6 @@ public interface StudentClass {
 	public void upsertInstructor(InstructorInformation instructor);
 
 	// ----------- Schedule Information ----------- //
-
-	public ScheduleInformation findByClassSchedule(Long studentID);
-
-	public ScheduleInformation findByStudent(Long classID);
 
 	public void addSchedule(ScheduleInformation schedule);
 

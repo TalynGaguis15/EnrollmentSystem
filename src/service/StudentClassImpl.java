@@ -35,6 +35,10 @@ public class StudentClassImpl implements StudentClass {
 			String instructor) {
 		return connect.findByCourse(courseCode, courseName, schedule, location, instructor);
 	}
+	public List<ClassInformation> findStudentSchedule(Long studentID)
+	{
+		return connect.findStudentSchedule(studentID);
+	}
 
 	@Override
 	public void addClass(ClassInformation user) {
@@ -83,6 +87,9 @@ public class StudentClassImpl implements StudentClass {
 		return connect.findByName(firstName, middleName, lastName, course);
 	}
 
+	public List<StudentInformation> findScheduleStudents(Long classID) {
+		return connect.findScheduleStudents(classID);
+	}
 	public void addStudent(StudentInformation student) {
 		if (validate(student)) {
 			connect.addStudent(student);
@@ -149,13 +156,6 @@ public class StudentClassImpl implements StudentClass {
 	
 	// ---------- Schedule Information ---------- //
 	
-	public ScheduleInformation findByClassSchedule(Long studentID) {
-		return connect.findByClassSchedule(studentID);
-	}
-	
-	public ScheduleInformation findByStudent(Long classID) {
-		return connect.findByStudent(classID);
-	}
 
 	public void addSchedule(ScheduleInformation schedule) {
 		

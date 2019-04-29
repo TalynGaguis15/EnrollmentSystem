@@ -2,19 +2,21 @@ package domain;
 
 public class ClassInformation {
 
-	Long id, units, classSize;
+	Long id,  units, classSize;
 	private String courseCode, courseName, schedule, location, instructor;
 
 	public ClassInformation() {
 
 	}
 
-	public ClassInformation( Long units, Long classSize, String courseCode, String courseName, String schedule, String location, String instructor) {
+	public ClassInformation(Long units, Long classSize, String courseCode, String courseName, String schedule, String location, String instructor) {
 		this(null, units, classSize, courseCode, courseName, schedule, location, instructor);
 	}
 
-	public ClassInformation(Long id, Long units, Long classSize, String courseCode, String courseName, String schedule,
-			String location, String instructor) {
+	
+
+	public ClassInformation(Long id, Long units, Long classSize, String courseCode, String courseName,
+			String schedule, String location, String instructor) {
 		this.id = id;
 		this.units = units;
 		this.classSize = classSize;
