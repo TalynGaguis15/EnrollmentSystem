@@ -3,24 +3,25 @@ package domain;
 public class StudentInformation {
 
 	Long studentID, units;
-	private String firstName, middleName, lastName, Course;
+	private String firstName, middleName, lastName, Course, date;
 
 	public StudentInformation() {
 
 	}
 
-	public StudentInformation(Long units, String firstName, String middleName, String lastName, String course) {
-		this(null, units, firstName, middleName, lastName, course);
+	public StudentInformation(Long units, String firstName, String middleName, String lastName, String course, String date) {
+		this(null, units, firstName, middleName, lastName, course, date);
 	}
 
 	public StudentInformation(Long studentID, Long units, String firstName, String middleName, String lastName,
-			String course) {
+			String course, String date) {
 		this.studentID = studentID;
 		this.units = units;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
 		Course = course;
+		this.date = date;
 	}
 
 	public Long getStudentID() {
@@ -70,5 +71,16 @@ public class StudentInformation {
 	public void setCourse(String course) {
 		Course = course;
 	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	
+
 
 }

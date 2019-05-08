@@ -36,7 +36,8 @@ public class StudentController {
 			@QueryParam("middleName") String middleName,
 			@QueryParam("lastName") String lastName, 
 			@QueryParam("course") String course,
-			@QueryParam("units") String units){
+			@QueryParam("units") String units,
+	        @QueryParam("date")String date){
 
 		try {
 			List<StudentInformation> student;
@@ -76,7 +77,7 @@ public class StudentController {
 		try {
 			studentclass.addStudent(student);
 			String result = "User saved : " + student.getFirstName() + " " + student.getMiddleName() + " " + student.getLastName() 
-					+ "" + student.getCourse()+ " " + student.getUnits();
+					+ "" + student.getCourse()+ " " + student.getUnits()+ " "+ student.getDate();
 			return Response.status(201).entity(result).build();
 		} catch (Exception e) {
 			throw new WebApplicationException(e);
@@ -91,7 +92,7 @@ public class StudentController {
 		try {
 			studentclass.upsertStudent(student);
 			String result = "User updated : " + student.getFirstName()+ " " + student.getMiddleName() + " " + student.getLastName() + ""
-					+ "" + student.getCourse()+ " " + student.getUnits();
+					+ "" + student.getCourse()+ " " + student.getUnits()+ "" + student.getDate();
 			return Response.status(200).entity(result).build();
 		} catch (Exception e) {
 			throw new WebApplicationException(e);

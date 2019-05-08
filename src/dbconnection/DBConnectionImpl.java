@@ -155,7 +155,7 @@ public class DBConnectionImpl implements DBConnection {
 	public void addClass(ClassInformation user) {
 
 		String insertSql = "INSERT INTO CLASS (coursecode, coursename, schedule, location, instructor, units, classsize) "
-				+ " VALUES (?, ?, ?, ?, ?, ?, ?)";
+				+ " VALUES (?, ?, ?, ?, ?, ?, 0)";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(insertSql)) {
 
@@ -165,7 +165,6 @@ public class DBConnectionImpl implements DBConnection {
 			ps.setString(4, user.getLocation());
 			ps.setString(5, user.getInstructor());
 			ps.setLong(6, user.getUnits());
-			ps.setLong(7, user.getClassSize());
 			ps.executeUpdate();
 
 		} catch (SQLException e) {
@@ -229,7 +228,8 @@ public class DBConnectionImpl implements DBConnection {
 			if (results.next()) {
 				student = new StudentInformation(Long.valueOf(results.getInt("studentid")),
 						Long.valueOf(results.getInt("totalunits")), results.getString("firstname"),
-						results.getString("middlename"), results.getString("lastname"), results.getString("course"));
+						results.getString("middlename"), results.getString("lastname"), results.getString("course"),
+						results.getString("date"));
 			}
 
 		} catch (SQLException e) {
@@ -256,7 +256,8 @@ public class DBConnectionImpl implements DBConnection {
 			while (results.next()) {
 				StudentInformation student = new StudentInformation(Long.valueOf(results.getInt("studentid")),
 						Long.valueOf(results.getInt("totalunits")), results.getString("firstname"),
-						results.getString("middlename"), results.getString("lastname"), results.getString("course"));
+						results.getString("middlename"), results.getString("lastname"), results.getString("course"),
+						results.getString("date"));
 				students.add(student);
 			}
 
@@ -284,7 +285,8 @@ public class DBConnectionImpl implements DBConnection {
 			while (results.next()) {
 				StudentInformation user = new StudentInformation(Long.valueOf(results.getInt("studentid")),
 						Long.valueOf(results.getInt("totalunits")), results.getString("firstname"),
-						results.getString("middlename"), results.getString("lastname"), results.getString("course"));
+						results.getString("middlename"), results.getString("lastname"), results.getString("course"),
+						results.getString("date"));
 				users.add(user);
 			}
 
@@ -298,7 +300,7 @@ public class DBConnectionImpl implements DBConnection {
 
 	@Override
 	public void addStudent(StudentInformation student) {
-		String insertSql = "INSERT INTO STUDENT (firstname, middlename, lastname, course, totalunits) VALUES (?, ?, ?, ?, ?)";
+		String insertSql = "INSERT INTO STUDENT (firstname, middlename, lastname, course, totalunits, date) VALUES (?, ?, ?, ?, 0, ?)";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(insertSql)) {
 
@@ -306,7 +308,7 @@ public class DBConnectionImpl implements DBConnection {
 			ps.setString(2, student.getMiddleName());
 			ps.setString(3, student.getLastName());
 			ps.setString(4, student.getCourse());
-			ps.setLong(5, student.getUnits());
+			ps.setString(5, student.getDate());
 			ps.executeUpdate();
 
 		} catch (SQLException e) {
@@ -317,7 +319,7 @@ public class DBConnectionImpl implements DBConnection {
 
 	@Override
 	public void updateStudent(StudentInformation student) {
-		String updateSql = "UPDATE STUDENT SET firstname = ?, middlename = ?, lastname = ?, course = ?, totalunits = ? "
+		String updateSql = "UPDATE STUDENT SET firstname = ?, middlename = ?, lastname = ?, course = ?, totalunits = ?, date = ?"
 				+ " WHERE studentid = ?";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(updateSql)) {
@@ -327,7 +329,8 @@ public class DBConnectionImpl implements DBConnection {
 			ps.setString(3, student.getLastName());
 			ps.setString(4, student.getCourse());
 			ps.setLong(5, student.getUnits());
-			ps.setLong(6, student.getStudentID());
+			ps.setString(6, student.getDate());
+			ps.setLong(7, student.getStudentID());
 			ps.executeUpdate();
 
 		} catch (SQLException e) {
@@ -438,7 +441,7 @@ public class DBConnectionImpl implements DBConnection {
 	}
 
 	public void deleteScheduleStudent(Long scheduleID, Long studentID) {
-		String updateSql = "DELETE FROM SCHEDULE WHERE classid LIKE ? AND studentid LIKE ?";
+		String updateSql = "DELETE FROM SCHEDULE WHERE studentid LIKE ? AND classid LIKE ?";
 
 		try (Connection conn = data.getConnection(); PreparedStatement ps = conn.prepareStatement(updateSql)) {
 

@@ -22,6 +22,7 @@ public class InstructorController {
 	public InstructorController(){
 		this.studentclass = new StudentClassImpl();
 	}
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<InstructorInformation> getUsers(
